@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>SQL++</title>
+
+    <link rel="stylesheet" href="node_modules/codemirror/lib/codemirror.css"></link>
+    <link rel="stylesheet" type="text/css" href="./style.css"></link>
+    <link rel="stylesheet" type="text/css" href="./table-style.css"></link>
+  </head>
+  <body>
+    
+    <input id="run-query" type="button" value="Run"></input>
+
+    <div id="editor"></div>
+
+    <div class="results">
+      <table id="result-table" width="100%"></table>
+    </div>
+    
+    <script>
+      require("./renderer.js");        
+    </script>
+  </body>
+</html>

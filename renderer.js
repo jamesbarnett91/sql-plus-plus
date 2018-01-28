@@ -3,9 +3,10 @@ const cm = require("codemirror");
 const { Pool } = require("pg");
 require('datatables')(window, $);
 require("codemirror/mode/sql/sql");
+const Split = require("split.js");
 
 const editorContext = cm(document.getElementById("editor"), {
-  value: "select *\nfrom foo",
+  value: "select *\nfrom information_schema.tables",
   mode: "text/x-sql",
   lineNumbers: true
 });
@@ -36,7 +37,7 @@ function displayResults(results) {
     dataTable.destroy();
     _resultsTable().empty();
   }
-  
+
   dataTable = _resultsTable().DataTable({
     paging: false,
     destroy: true,
@@ -60,5 +61,22 @@ function _resultsTable() {
 
 $(document).ready(function () {
   $('#run-query').click(runQuery);
+
+  Split(['.editor-row', '.results-row'], {
+    sizes: [50, 50],
+    direction: 'vertical',
+    gutterSize: 10,
+    elementStyle: function (dimension, size, gutterSize) {
+      return {
+        'flex-basis': 'calc(' + size + '% - ' + gutterSize + 'px)'
+      }
+    },
+    gutterStyle: function (dimension, gutterSize) {
+      return {
+        'flex-basis': gutterSize + 'px'
+      }
+    } 
+  });
+
 })
 

@@ -9,15 +9,24 @@
     <link rel="stylesheet" type="text/css" href="./table-style.css"></link>
   </head>
   <body>
-    
-    <input id="run-query" type="button" value="Run"></input>
+    <div class="flex-wrapper">
+      <div class="row header">
+        <input id="run-query" type="button" value="Run"></input>
+      </div>
+      
 
-    <div id="editor"></div>
+      <div class="row content">
+        <div id="editor" class="editor-row split-row"></div>
+        
+        <div class="results-row split-row">
+          <table id="result-table" width="100%"></table>
+        </div>
+      </div>
 
-    <div class="results">
-      <table id="result-table" width="100%"></table>
+      <div class="row footer">
+        some status
+      </div>
     </div>
-    
     <script>
       require("./renderer.js");        
     </script>

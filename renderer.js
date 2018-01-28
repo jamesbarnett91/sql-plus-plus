@@ -25,30 +25,44 @@ const connectionPool = new Pool({
 let dataTable;
 
 function runQuery() {
- var query = editorContext.getValue(); 
+
+  _setExecutionStatusIndicator("RUNNING");
+ 
+  var query = editorContext.getValue(); 
   console.log(query);
 
   connectionPool.query(query, (err, res) => {
     console.log(err, res)
-    displayResults(res);
+    
+    if(err === undefined) {
+      handleResult(res);
+    }
+    else {
+      handleError(err);
+    }
+    
   });
 }
 
-function displayResults(results) {
+function handleError(err) {
+  _destroyDataTable();
+  $("#result-error").text("Error (" + err.code + ") - " + err.message);
+  _setExecutionStatusIndicator("ERROR");
+}
 
-  if(dataTable) {
-    dataTable.destroy();
-    _resultsTable().empty();
-  }
+function handleResult(results) {
+  $("#result-error").empty();
+  _destroyDataTable();
 
-  dataTable = _resultsTable().DataTable({
+  dataTable = _resultTable().DataTable({
     paging: false,
-    destroy: true,
     order: [],
     dom: "tr",
     data: results.rows,
     columns: _mapColumnProperties(results)
   });
+
+  _setExecutionStatusIndicator("OK");
 }
 
 function _mapColumnProperties(results) {
@@ -60,8 +74,30 @@ function _mapColumnProperties(results) {
   });
 }
 
-function _resultsTable() {
+function _resultTable() {
   return $("#result-table");
+}
+
+function _setExecutionStatusIndicator(status) {
+  switch(status) {
+    case "RUNNING":
+      $("#execution-status").removeClass().addClass("exec-running").text("Running");
+      break;
+    case "OK":
+      $("#execution-status").removeClass().addClass("exec-ok").text("Ok");
+      break;
+    case "ERROR":
+      $("#execution-status").removeClass().addClass("exec-error").text("Error");
+      break;        
+  }
+}
+
+function _destroyDataTable() {
+  if (dataTable) {
+    dataTable.destroy();
+    _resultTable().empty();
+    dataTable = undefined;
+  }
 }
 
 function _onKeyUp(event) {

@@ -21,11 +21,14 @@
         
         <div class="results-row split-row">
           <table id="result-table" class="table stripe compact order-column" width="100%"></table>
+          <div id="result-error"></div>
         </div>
       </div>
 
       <div class="row footer">
-        some status
+        <div id="execution-status" class="exec-idle">Idle</div>
+        <div id="execution-time"></div>
+        <div id="row-count"></div>
       </div>
     </div>
     <script>

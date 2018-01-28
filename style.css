@@ -44,9 +44,12 @@ body {
 }
 
 .flex-wrapper .row.footer {
-  flex: 0 1 20px;
+  flex: 0 1 auto;
   background-color: #474A5E;
   color: white;
+  display: flex;
+  flex-direction: row;
+  font-family: monospace;
 }
 
 .flex-wrapper .row .split-row {
@@ -77,4 +80,43 @@ body {
   color: #ffffff;
   background-color: #282a36;
   font-family: monospace;
+}
+
+#result-error {
+  padding: 5px;
+}
+
+#execution-status {
+  padding: 2px;
+  flex-basis: 60px;
+  text-align: center;
+  font-weight: bold;
+}
+
+#execution-time {
+  background-color: green;
+  flex-basis: auto;
+}
+
+#row-count {
+  background-color: blue;
+  flex-basis: auto;
+}
+
+.exec-idle {
+  background-color: gray;
+}
+
+.exec-running {
+  background-color: yellow;
+  color: black;
+}
+
+.exec-ok {
+  background-color: green;
+}
+
+.exec-error {
+  background-color: red;
+  color: black;
 }

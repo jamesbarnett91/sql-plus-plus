@@ -1,13 +1,15 @@
-const $ = require('jquery');
+'use strict';
+const $ = require("jquery");
 const cm = require("codemirror");
 const { Pool } = require("pg");
-require('datatables')(window, $);
+require("datatables")(window, $);
 require("codemirror/mode/sql/sql");
 const Split = require("split.js");
 
 const editorContext = cm(document.getElementById("editor"), {
   value: "select *\nfrom information_schema.tables",
   mode: "text/x-sql",
+  theme: "dracula",
   lineNumbers: true
 });
 
@@ -41,6 +43,8 @@ function displayResults(results) {
   dataTable = _resultsTable().DataTable({
     paging: false,
     destroy: true,
+    order: [],
+    dom: 'tr',
     data: results.rows,
     columns: _mapColumnProperties(results)
   });

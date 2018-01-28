@@ -4,6 +4,26 @@ body {
   margin: 0
 }
 
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #474A5E; 
+}
+ 
+::-webkit-scrollbar-thumb {
+  background: #63677C; 
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555; 
+}
+::-webkit-scrollbar-corner { 
+  background: #63677C
+}
+
 .flex-wrapper {
   display: flex;
   flex-flow: column;
@@ -12,7 +32,7 @@ body {
 
 .flex-wrapper .row.header {
   flex: 0 1 auto;
-  background-color: #505050;
+  background-color: #474A5E;
   color: white;
 }
 
@@ -25,7 +45,7 @@ body {
 
 .flex-wrapper .row.footer {
   flex: 0 1 20px;
-  background-color: #505050;
+  background-color: #474A5E;
   color: white;
 }
 
@@ -34,7 +54,7 @@ body {
 }
 
 .gutter {
-    background-color: #505050;
+    background-color: #474A5E;
     background-repeat: no-repeat;
     background-position: 50%;
 }
@@ -51,4 +71,10 @@ body {
 
 .CodeMirror {
   height: 100%;
+}
+
+.results-row {
+  color: #ffffff;
+  background-color: #282a36;
+  font-family: monospace;
 }

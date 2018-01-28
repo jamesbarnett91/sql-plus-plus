@@ -1,4 +1,5 @@
-'use strict';
+"use strict";
+
 const $ = require("jquery");
 const cm = require("codemirror");
 const { Pool } = require("pg");
@@ -14,10 +15,10 @@ const editorContext = cm(document.getElementById("editor"), {
 });
 
 const connectionPool = new Pool({
-  user: 'postgres',
-  host: 'localhost',
-  database: 'postgres',
-  password: '',
+  user: "postgres",
+  host: "localhost",
+  database: "postgres",
+  password: "",
   port: 5432
 });
 
@@ -44,7 +45,7 @@ function displayResults(results) {
     paging: false,
     destroy: true,
     order: [],
-    dom: 'tr',
+    dom: "tr",
     data: results.rows,
     columns: _mapColumnProperties(results)
   });
@@ -63,21 +64,30 @@ function _resultsTable() {
   return $("#result-table");
 }
 
-$(document).ready(function () {
-  $('#run-query').click(runQuery);
+function _onKeyUp(event) {
+  if (event.ctrlKey && event.keyCode == 13) {
+    runQuery();
+  }
+}
 
-  Split(['.editor-row', '.results-row'], {
+$(document).ready(function () {
+  
+  // Event handlers
+  $("#run-query").click(runQuery);
+  $(document).keyup(_onKeyUp);
+
+  Split([".editor-row", ".results-row"], {
     sizes: [50, 50],
-    direction: 'vertical',
+    direction: "vertical",
     gutterSize: 10,
     elementStyle: function (dimension, size, gutterSize) {
       return {
-        'flex-basis': 'calc(' + size + '% - ' + gutterSize + 'px)'
+        "flex-basis": "calc(" + size + "% - " + gutterSize + "px"
       }
     },
     gutterStyle: function (dimension, gutterSize) {
       return {
-        'flex-basis': gutterSize + 'px'
+        "flex-basis": gutterSize + "px"
       }
     } 
   });

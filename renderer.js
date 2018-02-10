@@ -48,7 +48,7 @@ ipcRenderer.on("queryExecutor.runQueryComplete", (event, response) => {
 function _startExecTimer() {
   execStartTime = new Date;
   execElapsedTime = 0;
-  execTimerInterval = setInterval(function () {
+  execTimerInterval = setInterval(() => {
     execElapsedTime = Date.now() - execStartTime;
     $("#execution-time").text("exec time: " + execElapsedTime + "ms");
   }, 10);
@@ -85,7 +85,7 @@ function handleResult(results) {
 }
 
 function _mapColumnProperties(results) {
-  return results.fields.map(function (column) {
+  return results.fields.map((column) => {
     return {
       "data": column.name,
       "title": column.name
@@ -125,7 +125,7 @@ function _onKeyUp(event) {
   }
 }
 
-$(document).ready(function () {
+$(document).ready(() => {
   
   // Event handlers
   $("#run-query").click(runQuery);
@@ -135,12 +135,12 @@ $(document).ready(function () {
     sizes: [50, 50],
     direction: "vertical",
     gutterSize: 10,
-    elementStyle: function (dimension, size, gutterSize) {
+    elementStyle: (dimension, size, gutterSize) => {
       return {
         "flex-basis": "calc(" + size + "% - " + gutterSize + "px"
       }
     },
-    gutterStyle: function (dimension, gutterSize) {
+    gutterStyle: (dimension, gutterSize) => {
       return {
         "flex-basis": gutterSize + "px"
       }

@@ -6,7 +6,7 @@ const url = require("url");
 let uiWindow;
 let queryExecutorProcess;
 
-function createMainWindow () {
+function createMainWindow() {
   uiWindow = new BrowserWindow({
     width: 800,
     height: 600
@@ -17,7 +17,7 @@ function createMainWindow () {
     slashes: true
   }));
 
-  uiWindow.on("closed", function () {
+  uiWindow.on("closed", () => {
     uiWindow = null;
     app.quit();
   });
@@ -34,24 +34,24 @@ function createQueryExecutorProcess() {
     slashes: true
   }));
 
-  queryExecutorProcess.on("closed", function () {
+  queryExecutorProcess.on("closed", () => {
     queryExecutorProcess = null;
   });
 
 }
 
-app.on("ready", function() {
+app.on("ready", () => {
   createMainWindow();
   createQueryExecutorProcess();
 });
 
-app.on("window-all-closed", function () {
+app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
     app.quit();
   }
 });
 
-app.on("activate", function () {
+app.on("activate", () => {
   if (uiWindow === null) {
     createWindow();
   }

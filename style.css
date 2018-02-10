@@ -50,6 +50,7 @@ body {
   display: flex;
   flex-direction: row;
   font-family: monospace;
+  align-items: center;
 }
 
 .flex-wrapper .row .split-row {
@@ -94,8 +95,9 @@ body {
 }
 
 #execution-time {
-  background-color: green;
+  /* background-color: green; */
   flex-basis: auto;
+  padding: 2px 10px;
 }
 
 #row-count {

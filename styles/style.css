@@ -122,3 +122,11 @@ body {
   background-color: red;
   color: black;
 }
+
+.selected-statement {
+  background-color: #4F4837;
+}
+
+.statement-pointer {
+  width: 10px;
+}

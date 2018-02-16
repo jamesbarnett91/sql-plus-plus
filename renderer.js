@@ -15,7 +15,12 @@ const editorContext = cm(document.getElementById("editor"), {
   gutters: ["CodeMirror-linenumbers", "statement-pointer"]
 });
 
-const statementDelimiter = "/"
+editorContext.on("cursorActivity", (instance) => {
+  let coords = instance.getCursor();
+  $("#cursor-coords").text("Ln " + (parseInt(coords.line)+1) + ", Col " + (parseInt(coords.ch)+1));
+});
+
+const statementDelimiter = "/";
 
 let dataTable;
 let execStartTime;

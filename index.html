@@ -4,37 +4,23 @@
     <meta charset="UTF-8">
     <title>SQL++</title>
 
-    <link rel="stylesheet" href="node_modules/codemirror/lib/codemirror.css"></link>
-    <link rel="stylesheet" href="node_modules/codemirror/theme/dracula.css"></link>
-    <link rel="stylesheet" href="node_modules/codemirror/addon/hint/show-hint.css"></link>
-    <link rel="stylesheet" href="node_modules/jquery.tabulator/dist/css/tabulator.css"></link>
-    <link rel="stylesheet" type="text/css" href="./styles/style.css"></link>
-    <link rel="stylesheet" type="text/css" href="./styles/table-style.css"></link>
+    <link rel="stylesheet" href="node_modules/electron-tabs/electron-tabs.css"></link>
+    <style>
+    body {
+      margin: 0;
+    }
+    </style>
   </head>
   <body>
-    <div class="flex-wrapper">
-      <div class="row header">
-        <input id="run-query" type="button" value="Run"></input>
-      </div>
-      
 
-      <div class="row content">
-        <div id="editor" class="editor-row split-row"></div>
-        
-        <div class="results-row split-row">
-          <div id="result-table"></div>
-          <div id="result-error"></div>
-        </div>
-      </div>
-
-      <div class="row footer">
-        <div id="execution-status" class="exec-idle">Idle</div>
-        <div id="execution-time"></div>
-        <div id="cursor-coords"></div>
-      </div>
+    <div class="etabs-tabgroup">
+      <div class="etabs-tabs"></div>
+      <div class="etabs-buttons"></div>
     </div>
+    <div class="etabs-views"></div>
+
     <script>
-      require("./renderer.js");
+      require("./instance-manager.js");
     </script>
   </body>
 </html>

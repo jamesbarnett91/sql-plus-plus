@@ -202,7 +202,7 @@ function _setExecutionStatusIndicator(status) {
 }
 
 function _destroyDataTable() {
-  if(dataTable) {
+  if (dataTable) {
     _resultTable().tabulator("destroy");
     _resultTable().removeAttr("style").empty();
     dataTable = undefined;

@@ -59,3 +59,6 @@ app.on("activate", () => {
 
 ipcMain.on("queryExecutor.runQueryComplete", (event, payload) => uiWindow.webContents.send("queryExecutor.runQueryComplete", payload));
 ipcMain.on("queryExecutor.runQuery", (event, payload) => queryExecutorProcess.webContents.send("queryExecutor.runQuery", payload));
+
+ipcMain.on("queryExecutor.queryTableMetadataComplete", (event, payload) => uiWindow.webContents.send("queryExecutor.queryTableMetadataComplete", payload));
+ipcMain.on("queryExecutor.queryTableMetadata", (event, payload) => queryExecutorProcess.webContents.send("queryExecutor.queryTableMetadata", payload));

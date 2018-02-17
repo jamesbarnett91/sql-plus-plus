@@ -5,6 +5,8 @@ const $ = require("jquery");
 const cm = require("codemirror");
 require("datatables")(window, $);
 require("codemirror/mode/sql/sql");
+require("codemirror/addon/hint/show-hint.js")
+require("codemirror/addon/hint/sql-hint.js")
 const Split = require("split.js");
 
 const editorContext = cm(document.getElementById("editor"), {
@@ -12,12 +14,23 @@ const editorContext = cm(document.getElementById("editor"), {
   mode: "text/x-sql",
   theme: "dracula",
   lineNumbers: true,
-  gutters: ["CodeMirror-linenumbers", "statement-pointer"]
+  gutters: ["CodeMirror-linenumbers", "statement-pointer"],
+  extraKeys: { "Ctrl-Space": "autocomplete" }
 });
 
 editorContext.on("cursorActivity", (instance) => {
   let coords = instance.getCursor();
-  $("#cursor-coords").text("Ln " + (parseInt(coords.line)+1) + ", Col " + (parseInt(coords.ch)+1));
+  $("#cursor-coords").text("Ln " + (parseInt(coords.line) + 1) + ", Col " + (parseInt(coords.ch) + 1));
+});
+
+ipcRenderer.send("queryExecutor.queryTableMetadata");
+ipcRenderer.on("queryExecutor.queryTableMetadataComplete", (event, response) => {
+  console.log(response);
+  cm.commands.autocomplete = function (cmInstance) {
+    cm.showHint(cmInstance, cm.hint.sql, {
+      tables: response.result
+    });
+  }
 });
 
 const statementDelimiter = "/";
@@ -47,7 +60,7 @@ function runQuery() {
 function findQuery() {
   let selectedText = editorContext.getSelection();
 
-  if(selectedText !== "") {
+  if (selectedText !== "") {
     _clearQueryMarks();
     return selectedText;
   }
@@ -55,11 +68,11 @@ function findQuery() {
     let cursorLine = editorContext.getCursor().line;
 
     let statementStartLine = editorContext.firstLine();
-    
+
     // lineCount rather than lastLine here, since lineCount is index 1 based.
     // getRange(from, to) below is 0 based, but the range is exclusive, so if we need to include the last line we need the +1 
     let statementEndLine = editorContext.lineCount();
-  
+
     // if the current line is a delimiter, thats the end of the statement
     if (editorContext.getLine(cursorLine) === statementDelimiter) {
       statementEndLine = cursorLine;
@@ -75,7 +88,7 @@ function findQuery() {
     }
 
     // mode up the document until a previous statements delimiter is found or the start of the document is reached
-    for(let i = cursorLine - 1; i >= editorContext.firstLine(); i--) {
+    for (let i = cursorLine - 1; i >= editorContext.firstLine(); i--) {
       if (editorContext.getLine(i) === statementDelimiter) {
         statementStartLine = i + 1;
         break;
@@ -86,7 +99,7 @@ function findQuery() {
       { line: statementStartLine, ch: 0 },
       { line: statementEndLine, ch: 0 }
     );
-    
+
     console.log(query);
 
     _clearQueryMarks();
@@ -116,7 +129,7 @@ function _clearQueryMarks() {
 
 ipcRenderer.on("queryExecutor.runQueryComplete", (event, response) => {
   _stopExecTimer();
-  if(response.error === undefined) {
+  if (response.error === undefined) {
     handleResult(response.result);
   }
   else {
@@ -178,7 +191,7 @@ function _resultTable() {
 }
 
 function _setExecutionStatusIndicator(status) {
-  switch(status) {
+  switch (status) {
     case "RUNNING":
       $("#execution-status").removeClass().addClass("exec-running").text("Running");
       break;
@@ -187,7 +200,7 @@ function _setExecutionStatusIndicator(status) {
       break;
     case "ERROR":
       $("#execution-status").removeClass().addClass("exec-error").text("Error");
-      break;        
+      break;
   }
 }
 
@@ -206,7 +219,7 @@ function _onKeyUp(event) {
 }
 
 $(document).ready(() => {
-  
+
   // Event handlers
   $("#run-query").click(runQuery);
   $(document).keyup(_onKeyUp);
@@ -224,7 +237,7 @@ $(document).ready(() => {
       return {
         "flex-basis": gutterSize + "px"
       }
-    } 
+    }
   });
 
 })

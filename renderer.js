@@ -1,9 +1,10 @@
 "use strict";
 
 const { ipcRenderer } = require('electron');
-const $ = require("jquery");
+const $ = window.jQuery = require("jquery");
+require("jquery-ui");
+require("jquery.tabulator");
 const cm = require("codemirror");
-require("datatables")(window, $);
 require("codemirror/mode/sql/sql");
 require("codemirror/addon/hint/show-hint.js")
 require("codemirror/addon/hint/sql-hint.js")
@@ -47,8 +48,6 @@ function runQuery() {
   _startExecTimer();
 
   let query = findQuery();
-
-  _destroyDataTable();
 
   ipcRenderer.send("queryExecutor.runQuery", query);
 }
@@ -155,22 +154,20 @@ function _stopExecTimer() {
 function handleError(err) {
   _stopExecTimer();
   _destroyDataTable();
-  $("#result-error").text("Error (" + err.code + ") - " + err.message);
+  $("#result-error").removeAttr("style").text("Error (" + err.code + ") - " + err.message);
   _setExecutionStatusIndicator("ERROR");
   $("#execution-time").text("failed after " + execElapsedTime + " ms");
 }
 
 function handleResult(results) {
   _stopExecTimer();
-  $("#result-error").empty();
+  _clearErrors();
   _destroyDataTable();
 
-  dataTable = _resultTable().DataTable({
-    paging: false,
-    order: [],
-    dom: "tr",
-    data: results.rows,
-    columns: _mapColumnProperties(results)
+  dataTable = $("#result-table").tabulator({
+    height: "100%",
+    columns: _mapColumnProperties(results),
+    data: results.rows
   });
 
   _setExecutionStatusIndicator("OK");
@@ -180,8 +177,8 @@ function handleResult(results) {
 function _mapColumnProperties(results) {
   return results.fields.map((column) => {
     return {
-      "data": column.name,
-      "title": column.name
+      field: column.name,
+      title: column.name
     };
   });
 }
@@ -205,11 +202,15 @@ function _setExecutionStatusIndicator(status) {
 }
 
 function _destroyDataTable() {
-  if (dataTable) {
-    dataTable.destroy();
-    _resultTable().empty();
+  if(dataTable) {
+    _resultTable().tabulator("destroy");
+    _resultTable().removeAttr("style").empty();
     dataTable = undefined;
   }
+}
+
+function _clearErrors() {
+  $("#result-error").attr("style", "display:none;").empty();
 }
 
 function _onKeyUp(event) {

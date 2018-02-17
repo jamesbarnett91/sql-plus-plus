@@ -1,43 +1,30 @@
-table.dataTable thead .sorting {
-  background-image: url("../images/sort_both.png"); 
+.tabulator {
+  border: none;
+  background-color: #282a36;
 }
-table.dataTable thead .sorting_asc {
-  background-image: url("../images/sort_asc.png"); 
+
+.tabulator .tabulator-header {
+  background-color: #474A5E;
+  color: whitesmoke;
 }
-table.dataTable thead .sorting_desc {
-  background-image: url("../images/sort_desc.png"); 
+
+.tabulator .tabulator-header .tabulator-col {
+  background-color: #474A5E;
 }
-table.dataTable thead .sorting_asc_disabled {
-  background-image: url("../images/sort_asc_disabled.png"); 
+
+.tabulator .tabulator-header .tabulator-col.tabulator-sortable:hover {
+  background-color: #6D8A88;
 }
-table.dataTable thead .sorting_desc_disabled {
-  background-image: url("../images/sort_desc_disabled.png"); 
+
+.tabulator .tabulator-row {
+  background-color: #282a36;
+  color: whitesmoke;
 }
-table.dataTable tbody tr {
-  background-color: #282a36; 
-}
-table.dataTable.stripe tbody tr.odd, table.dataTable.display tbody tr.odd {
-  background-color: #474A5E; 
-}
-table.dataTable.hover tbody tr:hover, table.dataTable.display tbody tr:hover {
-  background-color: #262834; 
-}
-table.dataTable.order-column tbody tr > .sorting_1,
-table.dataTable.order-column tbody tr > .sorting_2,
-table.dataTable.order-column tbody tr > .sorting_3, table.dataTable.display tbody tr > .sorting_1,
-table.dataTable.display tbody tr > .sorting_2,
-table.dataTable.display tbody tr > .sorting_3 {
-  background-color: #4F4837; 
-}
-table.dataTable.display tbody tr.odd > .sorting_1, table.dataTable.order-column.stripe tbody tr.odd > .sorting_1 {
-  background-color: #897E63; 
-}
-table.dataTable.display tbody tr.odd.selected > .sorting_1, table.dataTable.order-column.stripe tbody tr.odd.selected > .sorting_1 {
-  background-color: #897E63; 
-}
-table.dataTable.display tbody tr.even > .sorting_1, table.dataTable.order-column.stripe tbody tr.even > .sorting_1 {
-  background-color: #4F4837;
-}
-table.dataTable.display tbody tr:hover > .sorting_1, table.dataTable.order-column.hover tbody tr:hover > .sorting_1 {
-  background-color: #242631; 
+
+.tabulator .tabulator-row.tabulator-row-even {
+  background-color: #474A5E;
+} 
+
+.tabulator .tabulator-row.tabulator-selectable:hover {
+  background-color: #6D8A88;
 }

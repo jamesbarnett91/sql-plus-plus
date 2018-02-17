@@ -51,6 +51,7 @@ body {
   flex-direction: row;
   font-family: monospace;
   align-items: center;
+  height: 20px;
 }
 
 .flex-wrapper .row .split-row {

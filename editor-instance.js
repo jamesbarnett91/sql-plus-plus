@@ -6,9 +6,12 @@ require("jquery-ui");
 require("jquery.tabulator");
 const cm = require("codemirror");
 require("codemirror/mode/sql/sql");
-require("codemirror/addon/hint/show-hint.js")
-require("codemirror/addon/hint/sql-hint.js")
+require("codemirror/addon/hint/show-hint.js");
+require("codemirror/addon/hint/sql-hint.js");
 const Split = require("split.js");
+
+const editorInstanceId = require('uuid/v1')();
+console.log("instanceId=" + editorInstanceId);
 
 const editorContext = cm(document.getElementById("editor"), {
   value: "select *\nfrom information_schema.tables\n/\nselect now()\n/\nselect *\nfrom foo",
@@ -24,7 +27,7 @@ editorContext.on("cursorActivity", (instance) => {
   $("#cursor-coords").text("Ln " + (parseInt(coords.line) + 1) + ", Col " + (parseInt(coords.ch) + 1));
 });
 
-ipcRenderer.send("queryExecutor.queryTableMetadata");
+ipcRenderer.send("queryExecutor.queryTableMetadata", _generateIpcPayload());
 ipcRenderer.on("queryExecutor.queryTableMetadataComplete", (event, response) => {
   console.log(response);
   cm.commands.autocomplete = function (cmInstance) {
@@ -47,9 +50,10 @@ function runQuery() {
   _setExecutionStatusIndicator("RUNNING");
   _startExecTimer();
 
-  let query = findQuery();
+  let payload = _generateIpcPayload();
+  payload.query = findQuery();
 
-  ipcRenderer.send("queryExecutor.runQuery", query);
+  ipcRenderer.send("queryExecutor.runQuery", payload);
 }
 
 /**
@@ -126,15 +130,25 @@ function _clearQueryMarks() {
   editorContext.clearGutter("statement-pointer");
 }
 
-ipcRenderer.on("queryExecutor.runQueryComplete", (event, response) => {
-  _stopExecTimer();
-  if (response.error === undefined) {
-    handleResult(response.result);
+function _generateIpcPayload() {
+  return {
+    editorInstanceId: editorInstanceId
   }
-  else {
-    handleError(response.error);
-  }
+}
 
+ipcRenderer.on("queryExecutor.runQueryComplete", (event, response) => {
+  // TODO - new instances should register with the instance manager, and the manager should proxy IPC messages only to 
+  // the webview which sent the message. Rather than sending to all instances and the instance having to check
+  // if they were the intended recipient
+  if (response.editorInstanceId === editorInstanceId) {
+    _stopExecTimer();
+    if (response.error === undefined) {
+      handleResult(response.result);
+    }
+    else {
+      handleError(response.error);
+    }
+  }
 });
 
 function _startExecTimer() {

@@ -59,6 +59,8 @@ app.on("activate", () => {
 
 const { webContents } = require('electron');
 
+// TODO - only send messages to instance manager which will route request to correct webView, rather than 
+// sending to all webViews
 ipcMain.on("queryExecutor.runQueryComplete", (event, payload) => {
   webContents.getAllWebContents().forEach((w) => {
     w.send("queryExecutor.runQueryComplete", payload);

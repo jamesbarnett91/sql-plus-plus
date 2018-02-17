@@ -13,13 +13,14 @@ const connectionPool = new Pool({
 
 ipcRenderer.on("queryExecutor.runQuery", (event, payload) => {
 
-  connectionPool.query(payload, (err, res) => {
+  connectionPool.query(payload.query, (err, res) => {
 
     console.log(err, res)
 
     ipcRenderer.send("queryExecutor.runQueryComplete", {
       "error": err,
-      "result": res
+      "result": res,
+      "editorInstanceId": payload.editorInstanceId
     });
 
   });
@@ -50,7 +51,8 @@ ipcRenderer.on("queryExecutor.queryTableMetadata", (event, payload) => {
 
     ipcRenderer.send("queryExecutor.queryTableMetadataComplete", {
       "error": err,
-      "result": tableMetadata
+      "result": tableMetadata,
+      "editorInstanceId": payload.editorInstanceId
     });
 
   });

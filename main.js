@@ -5,6 +5,7 @@ const url = require("url");
 
 let uiWindow;
 let queryExecutorProcess;
+let newConnectionDialog;
 
 function createMainWindow() {
   uiWindow = new BrowserWindow({
@@ -25,7 +26,7 @@ function createMainWindow() {
 
 function createQueryExecutorProcess() {
   queryExecutorProcess = new BrowserWindow({
-    show: true
+    show: false
   });
 
   queryExecutorProcess.loadURL(url.format({
@@ -56,6 +57,27 @@ app.on("activate", () => {
     createWindow();
   }
 });
+
+function createNewConnectionDialog() {
+  newConnectionDialog = new BrowserWindow({
+    width: 400,
+    height: 470
+  });
+  newConnectionDialog.loadURL(url.format({
+    pathname: path.join(__dirname, "new-connection.html"),
+    protocol: "file:",
+    slashes: true
+  }));
+
+  newConnectionDialog.on("closed", () => {
+    newConnectionDialog = null;
+  });
+}
+
+ipcMain.on("instanceManager.openNewConnectionDialog", (event, payload) => {
+  createNewConnectionDialog();
+});
+
 
 const { webContents } = require('electron');
 

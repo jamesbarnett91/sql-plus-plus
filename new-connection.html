@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>SQL++ - New connection</title>
+    <link rel="stylesheet" href="node_modules/bulma/css/bulma.css"></link>
+    <link rel="stylesheet" href="./styles/new-connection.css"></link>
+  </head>
+  <body>
+
+    <h4 class="title is-4" >Add new connection</h4>
+
+    <div class="field">
+      <label class="label is-small" for="vendor">Vendor</label>
+      <div class="control">
+          <div class="select is-small">
+            <select id="vendor">
+              <option>Postgres</option>
+              <option>MySQL/MariaDB</option>
+              <option>Oracle</option>
+            </select>
+          </div>
+      </div>       
+    </div>
+    <div class="field">
+      <label class="label is-small" for="hostname">Hostname</label>
+      <div class="control">
+        <input id="hostname" class="input is-small" type="text"/>
+      </div>
+    </div>
+    <div class="field">
+      <label class="label is-small" for="port">Port</label>
+      <div class="control">
+        <input id="port" class="input is-small" type="text" placeholder="5432"/>
+      </div>
+    </div>
+    <div class="field">
+      <label class="label is-small" for="username">Username</label>
+      <div class="control">
+        <input id="username" class="input is-small" type="text"/>
+      </div>
+    </div>
+    <div class="field">
+      <label class="label is-small" for="password">Password</label>
+      <div class="control">
+        <input id="password" class="input is-small" type="text"/>
+      </div>
+    </div>
+    <div class="field is-grouped">
+      <div class="control">
+        <button id="create-connection" class="button is-link is-small">Add</button>
+      </div>
+      <div class="control">
+        <button id="test-connection" class="button is-small">Test connection</button>
+      </div>
+      <div class="control">
+        <button id="cancel" class="button is-text is-small">Cancel</button>
+      </div>
+    </div>
+  </body>
+
+</html>

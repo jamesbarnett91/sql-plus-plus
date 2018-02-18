@@ -2,6 +2,7 @@
 
 const { ipcRenderer } = require('electron');
 const TabGroup = require("electron-tabs");
+const $ = window.jQuery = require("jquery");
 
 let tabGroup = new TabGroup();
 let tab = tabGroup.addTab({
@@ -27,3 +28,18 @@ let tab2 = tabGroup.addTab({
   active: true,
   webviewAttributes: { "nodeintegration": true },
 });
+
+function createNewConnection() {
+  ipcRenderer.send("instanceManager.openNewConnectionDialog");
+}
+
+ipcRenderer.on("instanceManager.newConnectionCallback", (event, response) => {
+  console.log(response);
+});
+
+
+$(document).ready(() => {
+  $("#new-connection").click(() => {
+    createNewConnection();
+  })
+})

@@ -11,7 +11,8 @@ require("codemirror/addon/hint/sql-hint.js");
 const Split = require("split.js");
 
 const editorInstanceId = require('uuid/v1')();
-console.log("instanceId=" + editorInstanceId);
+
+let queryExecutorId;
 
 const editorContext = cm(document.getElementById("editor"), {
   value: "select *\nfrom information_schema.tables\n/\nselect now()\n/\nselect *\nfrom foo",
@@ -27,7 +28,20 @@ editorContext.on("cursorActivity", (instance) => {
   $("#cursor-coords").text("Ln " + (parseInt(coords.line) + 1) + ", Col " + (parseInt(coords.ch) + 1));
 });
 
-ipcRenderer.send("queryExecutor.queryTableMetadata", _generateIpcPayload());
+const statementDelimiter = "/";
+
+let dataTable;
+let execStartTime;
+let execTimerInterval;
+let execElapsedTime;
+let queryMark;
+
+ipcRenderer.on("editorInstance.registerQueryExecutor", (event, payload) => {
+  queryExecutorId = payload;
+  console.log(queryExecutorId);
+  ipcRenderer.send("queryExecutor.queryTableMetadata", _generateIpcPayload());
+})
+
 ipcRenderer.on("queryExecutor.queryTableMetadataComplete", (event, response) => {
   console.log(response);
   cm.commands.autocomplete = function (cmInstance) {
@@ -36,14 +50,6 @@ ipcRenderer.on("queryExecutor.queryTableMetadataComplete", (event, response) => 
     });
   }
 });
-
-const statementDelimiter = "/";
-
-let dataTable;
-let execStartTime;
-let execTimerInterval;
-let execElapsedTime;
-let queryMark;
 
 function runQuery() {
 
@@ -132,7 +138,8 @@ function _clearQueryMarks() {
 
 function _generateIpcPayload() {
   return {
-    editorInstanceId: editorInstanceId
+    editorInstanceId: editorInstanceId,
+    queryExecutorId: queryExecutorId
   }
 }
 

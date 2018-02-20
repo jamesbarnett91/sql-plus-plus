@@ -1,30 +1,39 @@
 "use strict";
 
-const { ipcRenderer } = require("electron");
+const { remote, ipcRenderer } = require("electron");
 const { Pool } = require("pg");
 
+const executorId = require("uuid/v1")();
+
+const connectionConfig = remote.getCurrentWindow().connectionConfig;
+
 const connectionPool = new Pool({
-  user: "postgres",
-  host: "localhost",
+  user: connectionConfig.username,
+  host: connectionConfig.host,
   database: "postgres",
-  password: "",
-  port: 5432
+  password: connectionConfig.password,
+  port: connectionConfig.port
 });
+
+// Initialisation completed
+ipcRenderer.send("queryExecutor.initialiseConnectionCallback", executorId);
 
 ipcRenderer.on("queryExecutor.runQuery", (event, payload) => {
 
-  connectionPool.query(payload.query, (err, res) => {
+  if(payload.queryExecutorId === executorId) {
+    connectionPool.query(payload.query, (err, res) => {
 
-    console.log(err, res)
-
-    ipcRenderer.send("queryExecutor.runQueryComplete", {
-      "error": err,
-      "result": res,
-      "editorInstanceId": payload.editorInstanceId
+      console.log(err, res)
+  
+      ipcRenderer.send("queryExecutor.runQueryComplete", {
+        "error": err,
+        "result": res,
+        "editorInstanceId": payload.editorInstanceId
+      });
+  
     });
-
-  });
-
+  }
+  
 });
 
 ipcRenderer.on("queryExecutor.queryTableMetadata", (event, payload) => {

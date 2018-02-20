@@ -4,8 +4,8 @@ const path = require("path");
 const url = require("url");
 
 let uiWindow;
-let queryExecutorProcess;
 let newConnectionDialog;
+let queryExecutors = [];
 
 function createMainWindow() {
   uiWindow = new BrowserWindow({
@@ -24,26 +24,8 @@ function createMainWindow() {
   });
 }
 
-function createQueryExecutorProcess() {
-  queryExecutorProcess = new BrowserWindow({
-    show: false
-  });
-
-  queryExecutorProcess.loadURL(url.format({
-    pathname: path.join(__dirname, "./query-executor-wrapper.html"),
-    protocol: "file:",
-    slashes: true
-  }));
-
-  queryExecutorProcess.on("closed", () => {
-    queryExecutorProcess = null;
-  });
-
-}
-
 app.on("ready", () => {
   createMainWindow();
-  createQueryExecutorProcess();
 });
 
 app.on("window-all-closed", () => {
@@ -78,6 +60,36 @@ ipcMain.on("instanceManager.openNewConnectionDialog", (event, payload) => {
   createNewConnectionDialog();
 });
 
+function createQueryExecutor(payload) {
+  let executor = new BrowserWindow({
+    show: false,
+  });
+  
+  executor.connectionConfig = payload;
+  
+  executor.loadURL(url.format({
+    pathname: path.join(__dirname, "./query-executor-wrapper.html"),
+    protocol: "file:",
+    slashes: true
+  }));
+
+  queryExecutors.push(executor);
+
+  return executor;
+}
+
+ipcMain.on("newConnection.createConnection", (event, payload) => {
+  createQueryExecutor(payload);
+});
+
+
+ipcMain.on("queryExecutor.initialiseConnectionCallback", (event, payload) => {
+  // TODO - handle connection initialisation errors
+  
+  uiWindow.webContents.send("instanceManager.registerNewInstance", payload);
+  newConnectionDialog.close();
+});
+
 
 const { webContents } = require('electron');
 
@@ -88,11 +100,21 @@ ipcMain.on("queryExecutor.runQueryComplete", (event, payload) => {
     w.send("queryExecutor.runQueryComplete", payload);
   })
 });
-ipcMain.on("queryExecutor.runQuery", (event, payload) => queryExecutorProcess.webContents.send("queryExecutor.runQuery", payload));
+
+ipcMain.on("queryExecutor.runQuery", (event, payload) => {
+  queryExecutors.forEach((executor) => {
+    executor.webContents.send("queryExecutor.runQuery", payload);
+  });
+});
 
 ipcMain.on("queryExecutor.queryTableMetadataComplete", (event, payload) => {
   webContents.getAllWebContents().forEach((w) => {
     w.send("queryExecutor.queryTableMetadataComplete", payload);
   })
 });
-ipcMain.on("queryExecutor.queryTableMetadata", (event, payload) => queryExecutorProcess.webContents.send("queryExecutor.queryTableMetadata", payload));
+;
+ipcMain.on("queryExecutor.queryTableMetadata", (event, payload) => {
+  queryExecutors.forEach((executor) => {
+    executor.webContents.send("queryExecutor.queryTableMetadata", payload);
+  });
+});

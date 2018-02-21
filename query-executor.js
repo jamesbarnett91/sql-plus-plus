@@ -23,8 +23,14 @@ ipcRenderer.on("queryExecutor.runQuery", (event, payload) => {
   if(payload.queryExecutorId === executorId) {
     connectionPool.query(payload.query, (err, res) => {
 
-      console.log(err, res)
+      console.log(err, res);
   
+      if(err !== undefined) {
+        // The IPC payload is serialised to JSON beofre transmisison, so the protoype chain is lost.
+        // So store the nicely formatted error message as a property.
+        err.cause = err.toString();
+      }
+
       ipcRenderer.send("queryExecutor.runQueryComplete", {
         "error": err,
         "result": res,

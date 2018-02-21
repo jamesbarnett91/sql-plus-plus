@@ -175,7 +175,7 @@ function _stopExecTimer() {
 function handleError(err) {
   _stopExecTimer();
   _destroyDataTable();
-  $("#result-error").removeAttr("style").text("Error (" + err.code + ") - " + err.message);
+  $("#result-error").removeAttr("style").text("Error (" + err.code + ") - " + err.cause);
   _setExecutionStatusIndicator("ERROR");
   $("#execution-time").text("failed after " + execElapsedTime + " ms");
 }

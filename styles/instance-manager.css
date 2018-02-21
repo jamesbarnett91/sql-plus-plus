@@ -1,0 +1,35 @@
+body {
+  margin: 0;
+}
+
+.etabs-tabgroup {
+  background-color: #282a36;
+}
+
+.etabs-tab {
+  color: white;
+  background: none;
+  background-color: #474A5E;
+  border: none;
+  font-weight: bold;
+}
+
+.etabs-tab.active {
+  background: #6D8A88;
+}
+
+.etabs-views {
+  border: none;
+  height: calc(100vh - 52px);
+}
+
+.etabs-buttons button {
+  width: inherit;
+  padding: 4px 6px;
+  background: #6D8A88;
+}
+
+.etabs-tabgroup-footer {
+  background: #6D8A88;
+  height: 20px;
+}

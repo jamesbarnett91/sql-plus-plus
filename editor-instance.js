@@ -6,9 +6,13 @@ require("jquery-ui");
 require("jquery.tabulator");
 const cm = require("codemirror");
 require("codemirror/mode/sql/sql");
-require("codemirror/addon/hint/show-hint.js")
-require("codemirror/addon/hint/sql-hint.js")
+require("codemirror/addon/hint/show-hint.js");
+require("codemirror/addon/hint/sql-hint.js");
 const Split = require("split.js");
+
+const editorInstanceId = require('uuid/v1')();
+
+let queryExecutorId;
 
 const editorContext = cm(document.getElementById("editor"), {
   value: "select *\nfrom information_schema.tables\n/\nselect now()\n/\nselect *\nfrom foo",
@@ -24,7 +28,20 @@ editorContext.on("cursorActivity", (instance) => {
   $("#cursor-coords").text("Ln " + (parseInt(coords.line) + 1) + ", Col " + (parseInt(coords.ch) + 1));
 });
 
-ipcRenderer.send("queryExecutor.queryTableMetadata");
+const statementDelimiter = "/";
+
+let dataTable;
+let execStartTime;
+let execTimerInterval;
+let execElapsedTime;
+let queryMark;
+
+ipcRenderer.on("editorInstance.registerQueryExecutor", (event, payload) => {
+  queryExecutorId = payload;
+  console.log(queryExecutorId);
+  ipcRenderer.send("queryExecutor.queryTableMetadata", _generateIpcPayload());
+})
+
 ipcRenderer.on("queryExecutor.queryTableMetadataComplete", (event, response) => {
   console.log(response);
   cm.commands.autocomplete = function (cmInstance) {
@@ -34,22 +51,15 @@ ipcRenderer.on("queryExecutor.queryTableMetadataComplete", (event, response) => 
   }
 });
 
-const statementDelimiter = "/";
-
-let dataTable;
-let execStartTime;
-let execTimerInterval;
-let execElapsedTime;
-let queryMark;
-
 function runQuery() {
 
   _setExecutionStatusIndicator("RUNNING");
   _startExecTimer();
 
-  let query = findQuery();
+  let payload = _generateIpcPayload();
+  payload.query = findQuery();
 
-  ipcRenderer.send("queryExecutor.runQuery", query);
+  ipcRenderer.send("queryExecutor.runQuery", payload);
 }
 
 /**
@@ -126,15 +136,26 @@ function _clearQueryMarks() {
   editorContext.clearGutter("statement-pointer");
 }
 
-ipcRenderer.on("queryExecutor.runQueryComplete", (event, response) => {
-  _stopExecTimer();
-  if (response.error === undefined) {
-    handleResult(response.result);
+function _generateIpcPayload() {
+  return {
+    editorInstanceId: editorInstanceId,
+    queryExecutorId: queryExecutorId
   }
-  else {
-    handleError(response.error);
-  }
+}
 
+ipcRenderer.on("queryExecutor.runQueryComplete", (event, response) => {
+  // TODO - new instances should register with the instance manager, and the manager should proxy IPC messages only to 
+  // the webview which sent the message. Rather than sending to all instances and the instance having to check
+  // if they were the intended recipient
+  if (response.editorInstanceId === editorInstanceId) {
+    _stopExecTimer();
+    if (response.error === undefined) {
+      handleResult(response.result);
+    }
+    else {
+      handleError(response.error);
+    }
+  }
 });
 
 function _startExecTimer() {
@@ -154,7 +175,7 @@ function _stopExecTimer() {
 function handleError(err) {
   _stopExecTimer();
   _destroyDataTable();
-  $("#result-error").removeAttr("style").text("Error (" + err.code + ") - " + err.message);
+  $("#result-error").removeAttr("style").text("Error (" + err.code + ") - " + err.cause);
   _setExecutionStatusIndicator("ERROR");
   $("#execution-time").text("failed after " + execElapsedTime + " ms");
 }
@@ -202,7 +223,7 @@ function _setExecutionStatusIndicator(status) {
 }
 
 function _destroyDataTable() {
-  if(dataTable) {
+  if (dataTable) {
     _resultTable().tabulator("destroy");
     _resultTable().removeAttr("style").empty();
     dataTable = undefined;

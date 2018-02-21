@@ -1,29 +1,45 @@
 "use strict";
 
-const { ipcRenderer } = require("electron");
+const { remote, ipcRenderer } = require("electron");
 const { Pool } = require("pg");
 
+const executorId = require("uuid/v1")();
+
+const connectionConfig = remote.getCurrentWindow().connectionConfig;
+
 const connectionPool = new Pool({
-  user: "postgres",
-  host: "localhost",
+  user: connectionConfig.username,
+  host: connectionConfig.host,
   database: "postgres",
-  password: "",
-  port: 5432
+  password: connectionConfig.password,
+  port: connectionConfig.port
 });
+
+// Initialisation completed
+ipcRenderer.send("queryExecutor.initialiseConnectionCallback", executorId);
 
 ipcRenderer.on("queryExecutor.runQuery", (event, payload) => {
 
-  connectionPool.query(payload, (err, res) => {
+  if(payload.queryExecutorId === executorId) {
+    connectionPool.query(payload.query, (err, res) => {
 
-    console.log(err, res)
+      console.log(err, res);
+  
+      if(err !== undefined) {
+        // The IPC payload is serialised to JSON beofre transmisison, so the protoype chain is lost.
+        // So store the nicely formatted error message as a property.
+        err.cause = err.toString();
+      }
 
-    ipcRenderer.send("queryExecutor.runQueryComplete", {
-      "error": err,
-      "result": res
+      ipcRenderer.send("queryExecutor.runQueryComplete", {
+        "error": err,
+        "result": res,
+        "editorInstanceId": payload.editorInstanceId
+      });
+  
     });
-
-  });
-
+  }
+  
 });
 
 ipcRenderer.on("queryExecutor.queryTableMetadata", (event, payload) => {
@@ -50,7 +66,8 @@ ipcRenderer.on("queryExecutor.queryTableMetadata", (event, payload) => {
 
     ipcRenderer.send("queryExecutor.queryTableMetadataComplete", {
       "error": err,
-      "result": tableMetadata
+      "result": tableMetadata,
+      "editorInstanceId": payload.editorInstanceId
     });
 
   });

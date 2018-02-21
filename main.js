@@ -43,7 +43,7 @@ app.on("activate", () => {
 function createNewConnectionDialog() {
   newConnectionDialog = new BrowserWindow({
     width: 400,
-    height: 470
+    height: 540
   });
   newConnectionDialog.loadURL(url.format({
     pathname: path.join(__dirname, "new-connection.html"),
@@ -83,10 +83,14 @@ ipcMain.on("newConnection.createConnection", (event, payload) => {
 });
 
 
-ipcMain.on("queryExecutor.initialiseConnectionCallback", (event, payload) => {
+ipcMain.on("queryExecutor.initialiseConnectionCallback", (event, executorId) => {
   // TODO - handle connection initialisation errors
   
-  uiWindow.webContents.send("instanceManager.registerNewInstance", payload);
+  // Bit of a hack, cant guarantee this was the executor which just got initalised.executor
+  // Should pass it back from the executor via the payload
+  let connectionName = queryExecutors[queryExecutors.length -1].connectionConfig.name;
+
+  uiWindow.webContents.send("instanceManager.registerNewInstance", {assignedQueryExecutorId: executorId, connectionName: connectionName});
   newConnectionDialog.close();
 });
 

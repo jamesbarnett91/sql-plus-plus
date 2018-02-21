@@ -32,8 +32,7 @@ body {
 
 .flex-wrapper .row.header {
   flex: 0 1 auto;
-  /* background-color: #474A5E; */
-  background: #6D8A88;
+  background-color: #474A5E;
   color: white;
 }
 

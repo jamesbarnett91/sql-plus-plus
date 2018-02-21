@@ -10,9 +10,9 @@ function createNewConnection() {
   ipcRenderer.send("instanceManager.openNewConnectionDialog");
 }
 
-function registerNewInstance(assignedQueryExecutorId) {
+function registerNewInstance(payload) {
   tabGroup.addTab({
-    title: "Electron",
+    title: payload.connectionName,
     src: "file://" + __dirname + "/editor-instance.html",
     visible: true,
     active: true,
@@ -21,15 +21,15 @@ function registerNewInstance(assignedQueryExecutorId) {
       let webview = tab.webview;
       if (!!webview) {
         webview.addEventListener("dom-ready", () => {
-          webview.send("editorInstance.registerQueryExecutor", assignedQueryExecutorId);
+          webview.send("editorInstance.registerQueryExecutor", payload.assignedQueryExecutorId);
         })
       }
     }
   });
 }
 
-ipcRenderer.on("instanceManager.registerNewInstance", (event, assignedQueryExecutorId) => {
-  registerNewInstance(assignedQueryExecutorId);
+ipcRenderer.on("instanceManager.registerNewInstance", (event, payload) => {
+  registerNewInstance(payload);
 });
 
 

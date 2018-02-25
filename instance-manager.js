@@ -12,7 +12,7 @@ function createNewConnection() {
 
 function registerNewInstance(payload) {
   tabGroup.addTab({
-    title: payload.connectionName,
+    title: getTabTitle(payload.connectionConfig),
     src: "file://" + __dirname + "/editor-instance.html",
     visible: true,
     active: true,
@@ -26,6 +26,15 @@ function registerNewInstance(payload) {
       }
     }
   });
+}
+
+function getTabTitle(connectionConfig) {
+  if(connectionConfig.name) {
+    return connectionConfig.name;
+  }
+  else {
+    return connectionConfig.hostname + ":" + connectionConfig.port;
+  }
 }
 
 ipcRenderer.on("instanceManager.registerNewInstance", (event, payload) => {

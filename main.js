@@ -97,7 +97,7 @@ ipcMain.on("queryExecutor.initialiseConnectionCallback", (event, payload) => {
       queryExecutors.pop().close();
     }
     else{
-      uiWindow.webContents.send("instanceManager.registerNewInstance", { assignedQueryExecutorId: payload.executorId, connectionName: connectionConfig.name });
+      uiWindow.webContents.send("instanceManager.registerNewInstance", { assignedQueryExecutorId: payload.executorId, connectionConfig: connectionConfig });
       newConnectionDialog.close();
     }
   }

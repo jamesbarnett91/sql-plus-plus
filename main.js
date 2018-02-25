@@ -145,6 +145,10 @@ function restoreSavedConnections() {
     console.log(connection[1]);
     createQueryExecutor(connection[1]);
   }
+  
+  if (connectionStore.size === 0) {
+    createNewConnectionDialog();
+  }
 }
 
 // TODO - only send messages to instance manager which will route request to correct webView, rather than 

@@ -5,7 +5,7 @@ const { Pool } = require("pg");
 
 const connectionTestQuery = "SELECT now()";
 
-const executorId = require("uuid/v1")();
+const executorId = remote.getCurrentWindow().executorId;
 
 const connectionConfig = remote.getCurrentWindow().connectionConfig;
 

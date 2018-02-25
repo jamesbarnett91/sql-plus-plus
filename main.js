@@ -2,8 +2,9 @@ const { app, BrowserWindow, ipcMain, webContents } = require('electron');
 const path = require("path");
 const url = require("url");
 const Store = require("electron-store");
-const connectionStore = new Store();
+const uuid = require('uuid/v1');
 
+const connectionStore = new Store();
 let uiWindow;
 let newConnectionDialog;
 let queryExecutors = [];
@@ -29,7 +30,6 @@ function createMainWindow() {
 app.on("ready", () => {
   createMainWindow();
   restoreSavedConnections();
-  console.log(savedConnections);
 });
 
 app.on("window-all-closed", () => {
@@ -70,6 +70,9 @@ function createQueryExecutor(payload) {
   });
   
   executor.connectionConfig = payload;
+  executor.executorId = uuid();
+
+  console.log("created executor with id:" + executor.executorId);
   
   executor.loadURL(url.format({
     pathname: path.join(__dirname, "./query-executor-wrapper.html"),
@@ -91,21 +94,22 @@ ipcMain.on("queryExecutor.initialiseConnectionCallback", (event, payload) => {
   
   if (payload.error !== undefined) {
     console.log(payload.error);
-    queryExecutors.pop().close();
+    destroyQueryExecutor(payload.executorId);
     newConnectionDialog.webContents.send("newConnection.initialisationFailed", payload.error);
   }
   else {
-    let connectionConfig = getQueryExecutorInstance().connectionConfig;
+    let connectionConfig = getQueryExecutorInstance(payload.executorId).connectionConfig;
 
     if(connectionConfig.isTest) {
       newConnectionDialog.webContents.send("newConnection.connectionTestOk");
-      queryExecutors.pop().close();
+      destroyQueryExecutor(payload.executorId);
     }
     else {
       uiWindow.webContents.send("instanceManager.registerNewInstance", { assignedQueryExecutorId: payload.executorId, connectionConfig: connectionConfig });
       
       persistConnection(connectionConfig);
 
+      // The connection dialog wont exist if this executor was restored on app start
       if (newConnectionDialog) {
         newConnectionDialog.close();
       }
@@ -115,22 +119,30 @@ ipcMain.on("queryExecutor.initialiseConnectionCallback", (event, payload) => {
   
 });
 
-function getQueryExecutorInstance() {
-  // Bit of a hack, cant guarantee this was the executor which just got initalised
-  // Should pass it back from the executor via the payload
-  return queryExecutors[queryExecutors.length - 1];
+function getQueryExecutorInstance(executorId) {
+  return queryExecutors.find((e) => {
+    return e.executorId === executorId;
+  });
+}
+
+function destroyQueryExecutor(executorId) {
+  let executor = getQueryExecutorInstance(executorId);
+  executor.close();
+  let i = queryExecutors.indexOf(executor);
+  if(i !== -1) {
+    queryExecutors.splice(i, 1);
+  }
 }
 
 function persistConnection(connectionConfig) {
   savedConnections.push(connectionConfig);
-
   connectionStore.set(savedConnections);
-
-  console.log(connectionStore.store);  
 }
 
 function restoreSavedConnections() {
   for (let connection of connectionStore) {
+    console.log("restoring connection:");
+    console.log(connection[1]);
     createQueryExecutor(connection[1]);
   }
 }

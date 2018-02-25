@@ -1,11 +1,13 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
-
+const { app, BrowserWindow, ipcMain, webContents } = require('electron');
 const path = require("path");
 const url = require("url");
+const Store = require("electron-store");
+const connectionStore = new Store();
 
 let uiWindow;
 let newConnectionDialog;
 let queryExecutors = [];
+let savedConnections = [];
 
 function createMainWindow() {
   uiWindow = new BrowserWindow({
@@ -26,6 +28,8 @@ function createMainWindow() {
 
 app.on("ready", () => {
   createMainWindow();
+  restoreSavedConnections();
+  console.log(savedConnections);
 });
 
 app.on("window-all-closed", () => {
@@ -86,6 +90,7 @@ ipcMain.on("newConnection.createConnection", (event, payload) => {
 ipcMain.on("queryExecutor.initialiseConnectionCallback", (event, payload) => {
   
   if (payload.error !== undefined) {
+    console.log(payload.error);
     queryExecutors.pop().close();
     newConnectionDialog.webContents.send("newConnection.initialisationFailed", payload.error);
   }
@@ -96,9 +101,15 @@ ipcMain.on("queryExecutor.initialiseConnectionCallback", (event, payload) => {
       newConnectionDialog.webContents.send("newConnection.connectionTestOk");
       queryExecutors.pop().close();
     }
-    else{
+    else {
       uiWindow.webContents.send("instanceManager.registerNewInstance", { assignedQueryExecutorId: payload.executorId, connectionConfig: connectionConfig });
-      newConnectionDialog.close();
+      
+      persistConnection(connectionConfig);
+
+      if (newConnectionDialog) {
+        newConnectionDialog.close();
+      }
+      
     }
   }
   
@@ -110,7 +121,19 @@ function getQueryExecutorInstance() {
   return queryExecutors[queryExecutors.length - 1];
 }
 
-const { webContents } = require('electron');
+function persistConnection(connectionConfig) {
+  savedConnections.push(connectionConfig);
+
+  connectionStore.set(savedConnections);
+
+  console.log(connectionStore.store);  
+}
+
+function restoreSavedConnections() {
+  for (let connection of connectionStore) {
+    createQueryExecutor(connection[1]);
+  }
+}
 
 // TODO - only send messages to instance manager which will route request to correct webView, rather than 
 // sending to all webViews

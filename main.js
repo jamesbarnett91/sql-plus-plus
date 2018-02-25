@@ -4,7 +4,11 @@ const url = require("url");
 const Store = require("electron-store");
 const uuid = require('uuid/v1');
 
-const connectionStore = new Store();
+const connectionStore = new Store({
+  name: "connections",
+  encryptionKey: "just-for-obfuscation-purposes"
+});
+
 let uiWindow;
 let newConnectionDialog;
 let queryExecutors = [];
@@ -145,7 +149,7 @@ function restoreSavedConnections() {
     console.log(connection[1]);
     createQueryExecutor(connection[1]);
   }
-  
+
   if (connectionStore.size === 0) {
     createNewConnectionDialog();
   }

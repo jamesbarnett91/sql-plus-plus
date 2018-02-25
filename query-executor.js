@@ -3,6 +3,8 @@
 const { remote, ipcRenderer } = require("electron");
 const { Pool } = require("pg");
 
+const connectionTestQuery = "SELECT now()";
+
 const executorId = require("uuid/v1")();
 
 const connectionConfig = remote.getCurrentWindow().connectionConfig;
@@ -15,8 +17,19 @@ const connectionPool = new Pool({
   port: connectionConfig.port
 });
 
-// Initialisation completed
-ipcRenderer.send("queryExecutor.initialiseConnectionCallback", executorId);
+// Test the newly initialised connection
+connectionPool.query(connectionTestQuery, (err, res) => {
+  setErrorCauseIfExists(err);
+  ipcRenderer.send("queryExecutor.initialiseConnectionCallback", {error: err, executorId: executorId});
+});
+
+function setErrorCauseIfExists(error) {
+  if (error !== undefined) {
+    // The IPC payload is serialised to JSON before transmission, so the prototype chain is lost.
+    // So store the nicely formatted error message as a property.
+    error.cause = error.toString();
+  }
+}
 
 ipcRenderer.on("queryExecutor.runQuery", (event, payload) => {
 
@@ -25,11 +38,7 @@ ipcRenderer.on("queryExecutor.runQuery", (event, payload) => {
 
       console.log(err, res);
   
-      if(err !== undefined) {
-        // The IPC payload is serialised to JSON beofre transmisison, so the protoype chain is lost.
-        // So store the nicely formatted error message as a property.
-        err.cause = err.toString();
-      }
+      setErrorCauseIfExists(err);
 
       ipcRenderer.send("queryExecutor.runQueryComplete", {
         "error": err,

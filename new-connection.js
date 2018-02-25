@@ -26,18 +26,30 @@ function parseForm() {
   return formData;
 }
 
-function createConnection() {
+function createConnection(isTest) {
+  $("#status-message").empty();
   let connectionProps = parseForm();
+  connectionProps.isTest = isTest;
   ipcRenderer.send("newConnection.createConnection", connectionProps);
 }
 
+ipcRenderer.on("newConnection.initialisationFailed", (event, error) => {
+  let errorMsg = $("<div class='notification is-danger'></div>").text(error.cause);
+  $("#status-message").append(errorMsg);
+});
+
+ipcRenderer.on("newConnection.connectionTestOk", (event) => {
+  let status = $("<div class='notification is-success'></div>").text("Connection OK");
+  $("#status-message").append(status);
+});
+
 $(document).ready(() => {
   $("#create-connection").click(() => {
-    createConnection();
+    createConnection(false);
   });
   
   $("#test-connection").click(() => {
-    //TODO
+    createConnection(true);
   });
 
   $("#cancel").click(() => {

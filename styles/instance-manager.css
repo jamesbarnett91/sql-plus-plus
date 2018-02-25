@@ -21,6 +21,7 @@ body {
 .etabs-views {
   border: none;
   height: calc(100vh - 52px);
+  background-color: #282a36;
 }
 
 .etabs-buttons button {

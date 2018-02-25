@@ -43,7 +43,7 @@ app.on("activate", () => {
 function createNewConnectionDialog() {
   newConnectionDialog = new BrowserWindow({
     width: 400,
-    height: 540
+    height: 600
   });
   newConnectionDialog.loadURL(url.format({
     pathname: path.join(__dirname, "new-connection.html"),
@@ -83,17 +83,32 @@ ipcMain.on("newConnection.createConnection", (event, payload) => {
 });
 
 
-ipcMain.on("queryExecutor.initialiseConnectionCallback", (event, executorId) => {
-  // TODO - handle connection initialisation errors
+ipcMain.on("queryExecutor.initialiseConnectionCallback", (event, payload) => {
   
-  // Bit of a hack, cant guarantee this was the executor which just got initalised.executor
-  // Should pass it back from the executor via the payload
-  let connectionName = queryExecutors[queryExecutors.length -1].connectionConfig.name;
+  if (payload.error !== undefined) {
+    queryExecutors.pop().close();
+    newConnectionDialog.webContents.send("newConnection.initialisationFailed", payload.error);
+  }
+  else {
+    let connectionConfig = getQueryExecutorInstance().connectionConfig;
 
-  uiWindow.webContents.send("instanceManager.registerNewInstance", {assignedQueryExecutorId: executorId, connectionName: connectionName});
-  newConnectionDialog.close();
+    if(connectionConfig.isTest) {
+      newConnectionDialog.webContents.send("newConnection.connectionTestOk");
+      queryExecutors.pop().close();
+    }
+    else{
+      uiWindow.webContents.send("instanceManager.registerNewInstance", { assignedQueryExecutorId: payload.executorId, connectionName: connectionConfig.name });
+      newConnectionDialog.close();
+    }
+  }
+  
 });
 
+function getQueryExecutorInstance() {
+  // Bit of a hack, cant guarantee this was the executor which just got initalised
+  // Should pass it back from the executor via the payload
+  return queryExecutors[queryExecutors.length - 1];
+}
 
 const { webContents } = require('electron');
 

@@ -24,7 +24,7 @@ cache:
 
 before_install:
     # OSX tar -C doesn't seem to create the directory if it doesnt exist.
-  - mkdir $HOME/.yarn
+  - mkdir -p $HOME/.yarn
   - curl -L https://yarnpkg.com/latest.tar.gz | tar xvz -C $HOME/.yarn --strip-components 1
   - export PATH="$HOME/.yarn/bin:$PATH"
 

@@ -6,8 +6,7 @@
   "scripts": {
     "start": "electron .",
     "pack": "electron-builder --dir",
-    "dist": "electron-builder",
-    "travis-dist": "yarn && electron-builder"
+    "dist": "electron-builder"
   },
   "author": {
     "name": "James Barnett",

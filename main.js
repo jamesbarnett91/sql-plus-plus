@@ -51,7 +51,7 @@ app.on("activate", () => {
 function createNewConnectionDialog() {
   newConnectionDialog = new BrowserWindow({
     width: 400,
-    height: 600
+    height: 640
   });
   newConnectionDialog.loadURL(url.format({
     pathname: path.join(__dirname, "html", "new-connection.html"),

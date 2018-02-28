@@ -23,8 +23,8 @@
             <div class="select is-small">
               <select name="vendor">
                 <option value="postgres">Postgres</option>
-                <option value="mysql">MySQL/MariaDB</option>
-                <option value="oracle">Oracle</option>
+                <option value="mysql" disabled>MySQL/MariaDB</option>
+                <option value="oracle" disabled>Oracle</option>
               </select>
             </div>
         </div>       
@@ -51,6 +51,12 @@
         <label class="label is-small" for="password">Password</label>
         <div class="control">
           <input name="password" class="input is-small" type="text"/>
+        </div>
+      </div>
+      <div class="field">
+        <label class="label is-small" for="database">Database</label>
+        <div class="control">
+          <input name="database" class="input is-small" type="text"/>
         </div>
       </div>
       <div id="status-message" class="field"></div>

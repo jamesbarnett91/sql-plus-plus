@@ -12,7 +12,7 @@ const connectionConfig = remote.getCurrentWindow().connectionConfig;
 const connectionPool = new Pool({
   user: connectionConfig.username,
   host: connectionConfig.host,
-  database: "postgres",
+  database: connectionConfig.database,
   password: connectionConfig.password,
   port: connectionConfig.port
 });
@@ -56,9 +56,9 @@ ipcRenderer.on("queryExecutor.queryTableMetadata", (event, payload) => {
   let tableMetadata = {};
 
   let tableDataQuery = 
-    "SELECT c.table_schema || '.' || c.table_name identifier, c.column_name " +
+    "SELECT c.table_name identifier, c.column_name " +
     "FROM information_schema.columns c " +
-    "WHERE c.table_schema != 'pg_catalog'";
+    "WHERE c.table_schema = current_schema()";
 
   connectionPool.query(tableDataQuery, (err, res) => {
 

@@ -131,3 +131,18 @@ body {
 .statement-pointer {
   width: 10px;
 }
+
+.button {
+  padding: 4px 6px;
+  background: #6D8A88;
+  border: none;
+  border-radius: 2px;
+  font-size: 12px;
+  margin: 6px;
+  text-align: center;
+}
+
+.button:hover {
+  color: #eee;
+  background-color: #aaa;
+}

@@ -188,7 +188,7 @@ function handleResult(results) {
   dataTable = $("#result-table").tabulator({
     height: "100%",
     columns: _mapColumnProperties(results),
-    data: results.rows
+    data: _escapeRowFieldNames(results.rows)
   });
 
   _setExecutionStatusIndicator("OK");
@@ -198,9 +198,24 @@ function handleResult(results) {
 function _mapColumnProperties(results) {
   return results.fields.map((column) => {
     return {
-      field: column.name,
+      field: "_" + column.name, // "_" to match up to the output of _escapeRowFieldNames()
       title: column.name
     };
+  });
+}
+
+/**
+ * Return the row object with all fields prefixed with an underscore.
+ * This avoids issues with Tabulator which doesn't like fields to have the same identifiers
+ * as built in JS properties/functions (e.g. 'length')
+ */
+function _escapeRowFieldNames(rows) {
+  return rows.map(row => {
+    let escapedRow = {}
+    Object.keys(row).forEach(key => {
+      escapedRow["_" + key] = row[key];
+    });
+    return escapedRow;
   });
 }
 

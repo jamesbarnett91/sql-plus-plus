@@ -20,7 +20,7 @@ function createMainWindow() {
     height: 600
   });
   uiWindow.loadURL(url.format({
-    pathname: path.join(__dirname, "index.html"),
+    pathname: path.join(__dirname, "html", "index.html"),
     protocol: "file:",
     slashes: true
   }));
@@ -54,7 +54,7 @@ function createNewConnectionDialog() {
     height: 600
   });
   newConnectionDialog.loadURL(url.format({
-    pathname: path.join(__dirname, "new-connection.html"),
+    pathname: path.join(__dirname, "html", "new-connection.html"),
     protocol: "file:",
     slashes: true
   }));
@@ -79,7 +79,7 @@ function createQueryExecutor(payload) {
   console.log("created executor with id:" + executor.executorId);
   
   executor.loadURL(url.format({
-    pathname: path.join(__dirname, "./query-executor-wrapper.html"),
+    pathname: path.join(__dirname, "html", "query-executor-wrapper.html"),
     protocol: "file:",
     slashes: true
   }));

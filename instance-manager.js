@@ -13,7 +13,7 @@ function createNewConnection() {
 function registerNewInstance(payload) {
   tabGroup.addTab({
     title: getTabTitle(payload.connectionConfig),
-    src: "file://" + __dirname + "/editor-instance.html",
+    src: "file://" + __dirname + "/html/editor-instance.html",
     visible: true,
     active: true,
     webviewAttributes: {"nodeintegration":true},

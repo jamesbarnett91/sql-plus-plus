@@ -16,7 +16,7 @@ let queryExecutorId;
 
 const editorContext = cm(document.getElementById("editor"), {
   value: "select *\nfrom information_schema.tables\n/\nselect now()\n/\nselect *\nfrom foo",
-  mode: "text/x-sql",
+  mode: "text/x-pgsql",
   theme: "dracula",
   lineNumbers: true,
   gutters: ["CodeMirror-linenumbers", "statement-pointer"],

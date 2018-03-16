@@ -11,7 +11,7 @@ const connectionConfig = remote.getCurrentWindow().connectionConfig;
 
 const connectionPool = new Pool({
   user: connectionConfig.username,
-  host: connectionConfig.host,
+  host: connectionConfig.hostname,
   database: connectionConfig.database,
   password: connectionConfig.password,
   port: connectionConfig.port

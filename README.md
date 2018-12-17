@@ -5,7 +5,7 @@ A simple cross platform SQL editor and statement runner.
 Currently for Postgres only, but MySQL and Oracle support planned.
 
 <p align="center">
-  <img alt="VS Code in action" src="https://james-barnett.net/files/spp/screenshots/app2.png">
+  <img alt="SQL plus plus" src="https://jamesbarnett.io/files/spp/screenshots/app2.png">
 </p>
 
 # Features
